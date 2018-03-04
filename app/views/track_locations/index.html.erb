@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Food truck finder:SF</title>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	
+	<!--Scripts used -->	
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAl2c9JkRK61gZhghdzMhfrVBY9Lhyv1NI&libraries=places"></script>
+
+	<style type="text/css">
+		body{
+			background-color: LightGray;
+		}
+
+	#container{
+		font-family: Arial;
+		font-size: 16px;
+	}
+
+	#googleMap {
+        width:65%;
+        height:400px;
+        padding-top: 10px;
+    	padding-right: 10px;
+    	padding-bottom: 10px;
+    	padding-left: 10px;
+      }
+	</style>
+
+</head>
+<body>
+	<div id="container"> <!-- Main container -->
+		<div id="header" class="jumbotron text-center"><!-- Header -->
+			<h1>Locate Food Trucks</h1>
+		</div>	
+
+		<div id="body" class="row"><!-- Body -->
+			<div id="googleMap"  class="col-md-8"></div> <!--map-->
+			
+			<div id="search" class="col-md-4"><!-- Search and results-->
+				<div id="searchInputs"> <!-- Search -->
+					<div id="searchLoc">
+						<label>Location: 
+							<input type="text" name="searchLocation" id="searchLocation" >
+						</label>
+					</div>
+					<div id="searchRad">
+						<label>Search radius:
+							<select name="searchRadius" id ="searchRadius">
+								<option value="1mi" selected>1 mile</option>
+  								<option value="0.5mi">0.5 mile</option>
+  								<option value="0.25mi">0.25 mile</option>
+							</select>
+						</label>
+					</div>
+				</div>
+
+    			
+				<div id="searchResults"> <!--Results -->
+					<label>Food Trucks in your vicinity:</label>
+					<div class="results"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Non functional code -->
+<!-- 	<script type="text/javascript">
+	function myMap() {
+        var uluru = {lat: 37.7749, lng: -122.431297};
+        var map = new google.maps.Map(document.getElementById('googleMap'), {
+          zoom: 15,
+          center: uluru
+        });
+        var marker = new google.maps.Marker({
+          position: uluru,
+          map: map
+        });
+      }
+</script> -->
+
+<script>
+    var input = document.getElementById('searchLocation');
+	var autocomplete = new google.maps.places.Autocomplete(input,{types: ['(cities)']});
+	google.maps.event.addListener(autocomplete, 'place_changed', function(){
+  		var place = autocomplete.getPlace();
+  		var lat = place.geometry.location.lat();
+	  	var lng = place.geometry.location.lng();
+
+	  	var searchRadius = document.getElementById('searchRadius').value;
+
+		$.get("/track_locations/get_locations?lat=" + lat + "&lng=" + lng + "&radius=" + searchRadius, function(data){
+			console.log(data)
+  			$(data).each(function(index,row) {
+    			var row_html = "<div class='row'><p>"+ (index+1) + ". "+ row["applicant"] + "</p></div>"
+    			$(".results").append(row_html)
+  			})
+		})
+	})
+</script>
+
+<!-- Non functional code -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAl2c9JkRK61gZhghdzMhfrVBY9Lhyv1NI&callback=myMap"></script> -->
+</body>
+</html>

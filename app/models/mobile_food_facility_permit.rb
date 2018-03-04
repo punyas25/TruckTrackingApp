@@ -1,0 +1,2 @@
+class MobileFoodFacilityPermit < ApplicationRecord
+end
